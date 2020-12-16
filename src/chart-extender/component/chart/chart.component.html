@@ -1,0 +1,95 @@
+<div class="chart">
+  <div class="chart-tools" *ngIf="state==='create'">
+    <button class="addItem" (click)="showModal=true">Add an item</button>
+    <input class="addItem" type="color" value="#00e600" (change)="changeColor($event)">
+    <input class="addItem" style="height: 16px" [(ngModel)]="lineWidth" type="number" max="10" min="1">
+    <button class="addItem" [style.backgroundColor]="breakLine?'yellow':null" (click)="breakLine=!breakLine">Break Line</button>
+    <button class="addItem" (click)="exportData()">Export Data</button>
+  </div>
+
+  <div class="container"
+       [id]="canvasBoxId"
+       (dblclick)="showInsertModal($event)"
+       (mouseup)="mouseUpPage($event)"
+       (mousemove)="mouseMove($event)">
+    <canvas class="canvas" [id]="canvasId"></canvas>
+<!--    [style.top]="(item.y - 465)+'px'"  adad 465 be in khater hast ke top az balaye safhe mohasebe nashavad-->
+<!--    [style.left]="(item.x - 45)+'px'"-->
+    <div class="container-item"
+         [id]="item.id"
+      [class.rcpType]="type==='rcp'"
+      (cdkDragMoved)="boxMoving(item, $event)"
+      cdkDragBoundary=".container"
+      cdkDrag [cdkDragDisabled]="state==='preview'"
+      *ngFor="let item of boxInfo"
+      [style.top]="item.y+'px'"
+      [style.left]="item.x+'px'">
+      <app-chart-item
+        [type]="type"
+        [data]="item">
+      </app-chart-item>
+      <div class="right-connection" *ngIf="state!=='preview'"
+           (mousedown)="mouseDown($event, item, 'right')"
+           (mouseup)="mouseUp($event, item, 'right')">
+      </div>
+      <div class="left-connection" *ngIf="state!=='preview'"
+           (mousedown)="mouseDown($event, item, 'left')"
+           (mouseup)="mouseUp($event, item, 'left')">
+      </div>
+      <div class="up-connection" *ngIf="state!=='preview'"
+           (mousedown)="mouseDown($event, item, 'up')"
+           (mouseup)="mouseUp($event, item, 'up')">
+      </div>
+      <div class="down-connection" *ngIf="state!=='preview'"
+           (mousedown)="mouseDown($event, item, 'down')"
+           (mouseup)="mouseUp($event, item, 'down')">
+      </div>
+
+      <i class="material-icons clearBtn clearBox" *ngIf="state!=='preview'" (click)="removeBox(item)">clear</i>
+      <i class="material-icons clearBtn editBox" *ngIf="state!=='preview'" (click)="editChartBox(item)">edit</i>
+
+      <div class="drag-handle"
+           *ngIf="state!=='preview'"
+           cdkDragHandle>
+        <svg width="24px" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"></path>
+          <path d="M0 0h24v24H0z" fill="none"></path>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="line-box" *ngIf="state!=='preview'">
+    <div class="lineInfo" *ngFor="let item of lineData" >
+      <label> From: <label style="color: red">{{item.from}}</label></label>
+      <label> To: <label style="color: green">{{item.to}}</label></label>
+      <i class="material-icons clearBtn" (click)="removeLine(item)">clear</i>
+    </div>
+  </div>
+
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-box">
+      <div class="modal-box-header" style="font-weight: bold"> Add New Item</div>
+      <div class="modal-box-body">
+        <label *ngIf="errorText" style="color: red">{{errorText}}</label>
+        <label>Title: </label>
+        <input autofocus [(ngModel)]="newItem.text" placeholder="Enter a Text">
+        <label>Footer Text: </label>
+        <input [(ngModel)]="newItem.footerText" placeholder="Enter a Footer Text">
+        <button *ngIf="type!=='rcp'" class="addItem" (click)="iconModal = true"> Icon
+          <i style="color: #3f444a" class="fas fa-{{newItem.icon}}"></i>
+        </button>
+        <input class="addItem" type="color" value="#00e600" (change)="newItem.color = $event.target.value">
+      </div>
+      <div class="modal-box-footer">
+        <button style="color: #424242; border-color: #424242" (click)="closeModal()"> Close</button>
+        <button (click)="insertItem()"> {{isEdit? 'Edit Item' : 'Insert Item'}}</button>
+      </div>
+    </div>
+    <div class="modal-icons" *ngIf="iconModal">
+      <i *ngFor="let icon of icons" class="fas fa-{{icon}}" (click)="newItem.icon=icon; iconModal=false"></i>
+    </div>
+  </div>
+
+</div>

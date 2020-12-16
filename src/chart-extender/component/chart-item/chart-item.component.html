@@ -1,0 +1,14 @@
+<div class="chart-item" *ngIf="type==='default'">
+  <div class="chart-item-top">
+    <i class="fas fa-{{data.icon}}"></i>
+    <div class="text">{{data.text}}</div>
+  </div>
+  <div [style.backgroundColor]="data.color" class="chart-item-bottom">{{data.number}}</div>
+</div>
+<div class="chart-item" *ngIf="type==='rcp'">
+  <div class="chart-item-top" [style.padding]="type==='rcp'?'10px':null">
+    <div [style.backgroundColor]="data.color" class="divider"></div>
+    <div class="text">{{data.text}}</div>
+  </div>
+  <div class="chart-item-bottom rcp-type">{{data.footerText}}</div>
+</div>
